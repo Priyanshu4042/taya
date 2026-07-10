@@ -75,7 +75,7 @@ class ExtractionParseException implements Exception {
 }
 
 class ExtractionService {
-  final String apiKey = "AQ.Ab8RN6Kp7glJzoqsQ6sYFZcJ-IvqtQI_OnraGylSDfXCcDRyOg";
+  final String apiKey = "";
   final String model;
   final http.Client _client;
 

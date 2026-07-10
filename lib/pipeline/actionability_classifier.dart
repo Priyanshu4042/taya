@@ -34,7 +34,7 @@ class ActionabilityClassifier {
   static const _apiUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-  final String apiKey = "AQ.Ab8RN6Kp7glJzoqsQ6sYFZcJ-IvqtQI_OnraGylSDfXCcDRyOg";
+  final String apiKey = "";
 
   // Fixed constructor to properly assign apiKey
   ActionabilityClassifier(apiKey);
