@@ -26,44 +26,6 @@ class _MessageInputScreenState extends State<MessageInputScreen> {
       return;
     }
 
-    // TODO: Process the message
-//     final cleanText = TextPreprocessor.preprocess(message);
-//
-//     print("Cleaned Text: $cleanText");
-//
-// // Cheap rule-based filter
-//     final filterResult = ActionableFilter.check(cleanText);
-//
-//     print(filterResult);
-//
-// // Stop immediately if definitely not actionable
-//     if (!filterResult.isCandidate) {
-//       print("Not actionable (filtered)");
-//       return;
-//     }
-//
-// // Candidate -> Ask LLM
-//     final apiKey = "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" ;
-//
-//     final llmResult = await ActionabilityClassifier(apiKey).classify(cleanText);
-//
-//     print(llmResult);
-//
-//     if (!llmResult.actionable) {
-//       print("Not actionable (filtered) by ai");
-//       return;
-//     }
-//
-//     final extractor = ExtractionService();
-//
-//     final record = await extractor.extract(
-//       rawText: cleanText
-//     );
-//
-//     print(record);
-//
-//     extractor.dispose();
-
     try {
       final result = await apiService.processMessage(
         userId: widget.userId,
