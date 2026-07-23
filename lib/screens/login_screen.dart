@@ -25,9 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       // On web, the page redirects and this code won't continue running
       // until the user is back — navigation should happen in a listener
       // on authStateChanges (see main.dart / app root).
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
+
     } catch (e) {
       setState(() {
         _errorMessage = 'Sign-in failed. Please try again.';

@@ -20,6 +20,11 @@ class AuthService {
       OAuthProvider.google,
       redirectTo: 'http://localhost:3000', // defaults to current origin on web
       authScreenLaunchMode: LaunchMode.platformDefault,
+      scopes: 'email profile https://www.googleapis.com/auth/calendar.events',
+      queryParams: {
+        'access_type': 'offline', // needed to get a refresh_token
+        'prompt': 'consent',      // forces consent screen so refresh_token is actually returned
+      },
     );
   }
 

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:taya/homepage.dart';
 import 'package:taya/screens/login_screen.dart';
@@ -43,10 +46,49 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   late final Stream<AuthState> _authStateStream;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _authStateStream = Supabase.instance.client.auth.onAuthStateChange;
+  // }
+
+
   @override
   void initState() {
     super.initState();
     _authStateStream = Supabase.instance.client.auth.onAuthStateChange;
+    _authStateStream.listen((data) {
+      final event = data.event;
+      final session = data.session;
+      if (event == AuthChangeEvent.signedIn && session != null) {
+        final refreshToken = session.providerRefreshToken;
+        if (refreshToken != null) {
+          _sendGoogleTokenToBackend(session.user.id, refreshToken);
+        }
+      }
+    });
+  }
+
+  Future<void> _sendGoogleTokenToBackend(String userId, String refreshToken) async {
+    final url = Uri.parse('http://127.0.0.1:8000/google/store-token');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'user_id': userId,
+          'provider_refresh_token': refreshToken,
+          'provider_access_token': Supabase.instance.client.auth.currentSession?.providerToken,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        debugPrint('Failed to store Google token: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error sending Google token to backend: $e');
+    }
   }
 
   @override
