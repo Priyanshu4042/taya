@@ -70,7 +70,7 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _sendGoogleTokenToBackend(String userId, String refreshToken) async {
-    final url = Uri.parse('http://127.0.0.1:8000/google/store-token');
+    final url = Uri.parse('https://taya-server-708184550477.asia-south1.run.app/google/store-token');
 
     try {
       final response = await http.post(
@@ -85,6 +85,8 @@ class _AuthGateState extends State<AuthGate> {
 
       if (response.statusCode != 200) {
         debugPrint('Failed to store Google token: ${response.statusCode} ${response.body}');
+      } else {
+        debugPrint('Success! Token sent to local backend via Ngrok.');
       }
     } catch (e) {
       debugPrint('Error sending Google token to backend: $e');

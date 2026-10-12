@@ -1,35 +1,32 @@
-import 'package:dio/dio.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'models/items.dart';
 
 class ApiService {
-  static const String baseUrl = "http://127.0.0.1:8000";
+  static const String baseUrl = "https://taya-server-708184550477.asia-south1.run.app";
+  static const Duration _timeout = Duration(seconds: 10);
 
-  late final Dio _dio;
-
-  ApiService() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-      ),
-    );
-  }
+  final http.Client _client = http.Client();
 
   Future<List<Item>> fetchItems(String userId) async {
-    final response = await _dio.get(
-      "/items",
+    final uri = Uri.parse("$baseUrl/items").replace(
       queryParameters: {
         "user_id": userId,
       },
     );
 
-    return (response.data as List)
-        .map((e) => Item.fromJson(e))
-        .toList();
-  }
+    final response = await _client.get(uri).timeout(_timeout);
 
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        "Failed to fetch items: ${response.statusCode} ${response.body}",
+      );
+    }
+
+    final decoded = jsonDecode(response.body) as List;
+    return decoded.map((e) => Item.fromJson(e)).toList();
+  }
 
   Future<dynamic> processMessage({
     required String userId,
@@ -37,17 +34,31 @@ class ApiService {
     String sender = "",
     String source = "sms",
   }) async {
-    final response = await _dio.post(
-      "/process-message",
-      data: {
+    final uri = Uri.parse("$baseUrl/process-message");
+
+    final response = await _client
+        .post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
         "user_id": userId,
         "message": message,
         "sender": sender,
         "source": source,
-      },
-    );
+      }),
+    )
+        .timeout(_timeout);
 
-    return response.data;
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+        "Failed to process message: ${response.statusCode} ${response.body}",
+      );
+    }
+
+    return jsonDecode(response.body);
+  }
+
+  void dispose() {
+    _client.close();
   }
 }
-
